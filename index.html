@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tinh Cầu Của Vy | Vy's Little Planet ✨</title>
+  <meta name="description" content="Một không gian nhỏ chữa lành và ngập tràn bình yên dành riêng cho Vy.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP for Smooth Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Dynamic Starfield & Shooting Stars Canvas -->
+  <canvas id="cosmic-canvas"></canvas>
+
+  <!-- Canvas for Heart & Hug Particle Explosion -->
+  <canvas id="fx-canvas"></canvas>
+
+  <!-- Ambient Audio Player Toggle -->
+  <header class="top-nav">
+    <div class="planet-badge">
+      <span class="pulse-dot"></span>
+      <span class="badge-text">Vy's Little Planet </span>
+    </div>
+
+    <button id="music-btn" class="music-toggle" aria-label="Bật/Tắt nhạc nền" title="Bật/Tắt nhạc nền">
+      <span class="music-icon" id="music-icon">🎵</span>
+      <span class="music-label">Giai điệu bình yên</span>
+      <div class="audio-waves" id="audio-waves">
+        <span></span><span></span><span></span>
+      </div>
+    </button>
+  </header>
+
+  <!-- Main Journey Stage -->
+  <main class="stage-container">
+
+    <!-- ================= PHASE 1: THE COSMIC GREETING ================= -->
+    <section class="phase-section active" id="phase-1">
+      <div class="cosmic-orb-wrapper">
+        <div class="planet-orb">
+          <div class="orb-ring"></div>
+          <div class="orb-core"></div>
+          <div class="orbiting-star"></div>
+        </div>
+      </div>
+
+      <div class="content-box">
+        <span class="sub-greeting">Gửi một cô gái đặc biệt ✨</span>
+        <h1 class="main-title gradient-text">Chào Cậu...</h1>
+        <p class="dialogue-text" id="typewriter-text-1">
+          Hôm nay của cậu thế nào? Có bận rộn và mỏi mệt lắm không?
+        </p>
+        <div class="healing-quote glass-card">
+          <p>“Đừng lo nhé, ở tinh cầu này không có deadline, không có khói bụi ồn ào... chỉ có sự bình yên dịu dàng dành riêng cho cậu thôi.”</p>
+        </div>
+        <button class="nav-btn next-btn" onclick="goToPhase(2)">
+          <span>Cùng bước vào tinh cầu</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= PHASE 2: STARS OF QUALITIES ================= -->
+    <section class="phase-section" id="phase-2">
+      <div class="section-header">
+        <span class="section-tag">Điều kỳ diệu từ cậu</span>
+        <h2 class="title-medium gradient-text">Những Vì Sao Mang Tên Vy</h2>
+        <p class="section-subtitle">Mỗi một phẩm chất đáng yêu của cậu đều thắp sáng cả dải ngân hà này</p>
+      </div>
+
+      <div class="stars-grid">
+        <!-- Quality Card 1 -->
+        <div class="star-card glass-card" data-tilt>
+          <div class="star-icon-wrapper star-gold">
+            <span class="icon">✨</span>
+          </div>
+          <h3 class="card-title">Nụ Cười Tỏa Sáng</h3>
+          <p class="card-desc">Một vì sao cho nụ cười luôn rạng rỡ của Vy... Chỉ một thoáng mỉm cười của cậu cũng đủ làm bừng sáng cả một ngày u ám.</p>
+          <div class="card-glow"></div>
+        </div>
+
+        <!-- Quality Card 2 -->
+        <div class="star-card glass-card" data-tilt>
+          <div class="star-icon-wrapper star-cyan">
+            <span class="icon">💫</span>
+          </div>
+          <h3 class="card-title">Sự Nỗ Lực Bền Bỉ</h3>
+          <p class="card-desc">Một vì sao cho sự nỗ lực không ngừng nghỉ... Dù có khó khăn, cậu vẫn luôn kiên cường bước tiếp hơn những gì cậu tự nhận.</p>
+          <div class="card-glow"></div>
+        </div>
+
+        <!-- Quality Card 3 -->
+        <div class="star-card glass-card" data-tilt>
+          <div class="star-icon-wrapper star-pink">
+            <span class="icon">🌸</span>
+          </div>
+          <h3 class="card-title">Trái Tim Ấm Áp</h3>
+          <p class="card-desc">Một vì sao cho sự dịu dàng và ấm áp mà Vy luôn quan tâm tới mọi người xung quanh. Một sự ân cần rất đỗi dễ thương.</p>
+          <div class="card-glow"></div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="nav-btn prev-btn" onclick="goToPhase(1)">Quay lại</button>
+        <button class="nav-btn next-btn" onclick="goToPhase(3)">
+          <span>Đi tiếp nhé</span>
+          <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= PHASE 3: EMPATHY & HEALING ================= -->
+    <section class="phase-section" id="phase-3">
+      <div class="empathy-container">
+        <div class="empathy-pills-row">
+          <div class="floating-pill pill-1">
+            <span class="pill-symbol">🌙</span>
+            <span>Những đêm thức khuya trằn trọc...</span>
+          </div>
+          <div class="floating-pill pill-2">
+            <span class="pill-symbol">🌧️</span>
+            <span>Những áp lực tự giấu kín không kể cùng ai...</span>
+          </div>
+          <div class="floating-pill pill-3">
+            <span class="pill-symbol">🛡️</span>
+            <span>Hay những lúc phải cố tỏ ra mạnh mẽ...</span>
+          </div>
+        </div>
+
+        <div class="center-empathy-box glass-card glowing-border">
+          <div class="quote-flower">🌺</div>
+          <h2 class="empathy-title gradient-text-warm">Nhưng Vy à...</h2>
+          <p class="empathy-main-quote">
+            “Cậu không cần lúc nào cũng phải gồng mình hoàn hảo đâu.<br>
+            Cậu cứ là chính cậu — mộc mạc, chân thành và rạng rỡ — đã là <strong>điều tuyệt vời nhất trên đời</strong> rồi.”
+          </p>
+          <span class="empathy-sign">Hãy thả lỏng vai và thở một hơi thật dài nhé 🌿</span>
+        </div>
+
+        <div class="btn-group">
+          <button class="nav-btn prev-btn" onclick="goToPhase(2)">Quay lại</button>
+          <button class="nav-btn next-btn" onclick="goToPhase(4)">
+            <span>Nhận món quà nhỏ</span>
+            <svg class="arrow-icon" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PHASE 4: THE INTERACTIVE GIFT ================= -->
+    <section class="phase-section" id="phase-4">
+      <div class="gift-wrapper">
+        <div class="crystal-heart-anchor" id="gift-anchor">
+          <div class="crystal-heart">
+            <div class="heart-pulse-halo"></div>
+            <span class="core-heart">💖</span>
+          </div>
+        </div>
+
+        <h2 class="title-medium gradient-text">Chúc cậu Ngày 20/10 vui vẻ nhé!</h2>
+        <p class="gift-caption">Có một vài bất ngờ nhỏ tớ giấu ở đây, cậu hãy chọn nhóo:</p>
+
+        <div class="interactive-choices">
+          <button class="gift-btn btn-wish" id="btn-trigger-wish">
+            <div class="btn-icon">💌</div>
+            <div class="btn-info">
+              <strong>Nhận một lời chúc</strong>
+              <small>Gói trọn bình an gửi đến cậu</small>
+            </div>
+          </button>
+
+          <button class="gift-btn btn-hug" id="btn-trigger-hug">
+            <div class="btn-icon">🫂</div>
+            <div class="btn-info">
+              <strong>Nhận một cái ôm ảo</strong>
+              <small>Ấm áp & tiếp thêm năng lượng</small>
+            </div>
+          </button>
+        </div>
+
+        <button class="restart-link" onclick="goToPhase(1)">
+          ↺ Thăm lại tinh cầu từ đầu
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Phase Progress Indicator Dots -->
+  <nav class="phase-indicator" aria-label="Tiến trình">
+    <div class="indicator-dot active" onclick="goToPhase(1)" title="Ghé thăm"></div>
+    <div class="indicator-dot" onclick="goToPhase(2)" title="Những vì sao"></div>
+    <div class="indicator-dot" onclick="goToPhase(3)" title="Lời vỗ về"></div>
+    <div class="indicator-dot" onclick="goToPhase(4)" title="Món quà"></div>
+  </nav>
+
+  <!-- ================= MODAL: LỜI CHÚC BÌNH AN ================= -->
+  <div class="modal-overlay" id="wish-modal">
+    <div class="modal-glass glass-card">
+      <button class="close-modal-btn" id="close-wish-modal" aria-label="Đóng">&times;</button>
+      <div class="modal-sparkle">✨</div>
+      <h3 class="modal-title">Gửi Vy thân mến,</h3>
+      <p class="modal-body">
+        “Chúc Vy mỗi sớm mai thức dậy lòng đều nhẹ tênh, nụ cười luôn hé trên môi và đêm về có những giấc ngủ thật an lành.<br><br>
+        Dù cuộc sống ngoài kia có xoay vần thế nào, mong cậu luôn kiên định, bình an và hạnh phúc với những gì mình chọn.<br><br>
+        <strong>Nhớ nhé: Tớ luôn ở đây lắng nghe và ủng hộ cậu!”</strong>
+      </p>
+      <div class="modal-footer">
+        <button class="modal-accept-btn" onclick="closeWishModal()">Cảm ơn tinh cầu 🌸</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BANNER: CÁI ÔM ẢO (VIRTUAL HUG) ================= -->
+  <div class="hug-banner" id="hug-banner">
+    <div class="hug-banner-content glass-card">
+      <div class="hug-emoji">🫂</div>
+      <h2>Ôm Vy Thật Chặt!</h2>
+      <p>Cậu đã làm rất tốt rồi, hôm nay hãy nghỉ ngơi thật ngon nhé!</p>
+      <button class="close-hug-btn" onclick="dismissHugBanner()">Nhận lấy hơi ấm 💖</button>
+    </div>
+  </div>
+
+  <!-- Background Music Audio Element -->
+  <audio id="bg-audio" autoplay loop preload="auto">
+    <!-- Peaceful royalty-free relaxing piano melody -->
+    <source src="peaceful.mp3" type="audio/mp3">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>

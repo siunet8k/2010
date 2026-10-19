@@ -1,0 +1,960 @@
+/* ==========================================================================
+   CSS VARIABLES & DESIGN TOKENS
+   ========================================================================== */
+:root {
+  --bg-deep: #070814;
+  --bg-midnight: #0c0e24;
+  --neon-purple: #bb86fc;
+  --neon-cyan: #03dac6;
+  --neon-pink: #ff7597;
+  --pastel-gold: #ffd166;
+  --text-primary: #f0f3fa;
+  --text-muted: #a0a6c2;
+
+  --glass-bg: rgba(20, 24, 48, 0.45);
+  --glass-border: rgba(187, 134, 252, 0.22);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-accent: 'Dancing Script', cursive;
+
+  --transition-smooth: all 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ==========================================================================
+   RESET & GLOBAL STYLES
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Canvas Backdrops */
+#cosmic-canvas,
+#fx-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+#cosmic-canvas {
+  z-index: 0;
+  background: radial-gradient(circle at 50% 20%, #151838 0%, var(--bg-deep) 75%);
+}
+
+#fx-canvas {
+  z-index: 100;
+}
+
+/* ==========================================================================
+   HEADER & FLOATING AUDIO TOGGLE
+   ========================================================================== */
+.top-nav {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.planet-badge,
+.music-toggle {
+  pointer-events: auto;
+}
+
+.planet-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  color: var(--neon-cyan);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-cyan);
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.music-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 999px;
+  padding: 8px 18px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.music-toggle:hover {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 16px rgba(255, 117, 151, 0.4);
+  transform: translateY(-2px);
+}
+
+.audio-waves {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+
+.audio-waves span {
+  width: 3px;
+  height: 4px;
+  background-color: var(--neon-pink);
+  border-radius: 2px;
+  transition: height 0.2s ease;
+}
+
+.audio-waves.playing span:nth-child(1) { animation: wave 1s infinite 0.1s ease-in-out; }
+.audio-waves.playing span:nth-child(2) { animation: wave 1s infinite 0.3s ease-in-out; }
+.audio-waves.playing span:nth-child(3) { animation: wave 1s infinite 0.2s ease-in-out; }
+
+/* ==========================================================================
+   STAGE & PHASES ARCHITECTURE
+   ========================================================================== */
+.stage-container {
+  position: relative;
+  z-index: 10;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 24px;
+}
+
+.phase-section {
+  position: absolute;
+  width: 100%;
+  max-width: 900px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.phase-section.active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Glassmorphism Common Class */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+}
+
+/* Typography Helpers */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 15%, var(--neon-purple) 60%, var(--neon-pink) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, #fff 10%, var(--pastel-gold) 60%, var(--neon-pink) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Common Interactive Buttons */
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition-smooth);
+}
+
+.next-btn {
+  background: linear-gradient(135deg, var(--neon-purple), #8c52ff);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(187, 134, 252, 0.4);
+}
+
+.next-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(187, 134, 252, 0.65);
+}
+
+.prev-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.prev-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.arrow-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+}
+
+.next-btn:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+/* ==========================================================================
+   PHASE 1: COSMIC GREETING & PLANET ORB
+   ========================================================================== */
+.cosmic-orb-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 24px;
+}
+
+.planet-orb {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb-core {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffb6c1, #800080 60%, #1e0038);
+  box-shadow:
+    inset -10px -10px 30px rgba(0, 0, 0, 0.7),
+    0 0 45px rgba(255, 117, 151, 0.6),
+    0 0 90px rgba(187, 134, 252, 0.3);
+  animation: floatOrb 5s ease-in-out infinite;
+}
+
+.orb-ring {
+  position: absolute;
+  width: 170px;
+  height: 48px;
+  border: 3px solid rgba(255, 117, 151, 0.7);
+  border-top-color: rgba(3, 218, 198, 0.9);
+  border-radius: 50%;
+  transform: rotate(-28deg);
+  box-shadow: 0 0 20px rgba(255, 117, 151, 0.5);
+  animation: tiltRing 8s linear infinite;
+}
+
+.orbiting-star {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #fff, 0 0 24px var(--neon-cyan);
+  animation: orbitAround 6s linear infinite;
+}
+
+.sub-greeting {
+  display: inline-block;
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--neon-cyan);
+  margin-bottom: 8px;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+
+.dialogue-text {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  max-width: 580px;
+  margin: 0 auto 20px;
+  font-weight: 400;
+}
+
+.healing-quote {
+  padding: 22px 28px;
+  margin: 12px auto 32px;
+  max-width: 620px;
+  border-left: 4px solid var(--neon-pink);
+}
+
+.healing-quote p {
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #d8deec;
+}
+
+/* ==========================================================================
+   PHASE 2: STARS OF QUALITIES
+   ========================================================================== */
+.section-tag {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--neon-pink);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.title-medium {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 0 auto 36px;
+  font-size: 1.05rem;
+}
+
+.stars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.star-card {
+  position: relative;
+  padding: 36px 24px;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.4s ease, border-color 0.4s ease;
+}
+
+.star-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.star-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+}
+
+.star-gold {
+  background: rgba(255, 209, 102, 0.15);
+  box-shadow: 0 0 20px rgba(255, 209, 102, 0.25);
+}
+
+.star-cyan {
+  background: rgba(3, 218, 198, 0.15);
+  box-shadow: 0 0 20px rgba(3, 218, 198, 0.25);
+}
+
+.star-pink {
+  background: rgba(255, 117, 151, 0.15);
+  box-shadow: 0 0 20px rgba(255, 117, 151, 0.25);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.card-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Subtle corner gradient hover */
+.card-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--neon-purple), transparent 70%);
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+
+.star-card:hover .card-glow {
+  opacity: 0.55;
+}
+
+/* ==========================================================================
+   PHASE 3: EMPATHY & HEALING
+   ========================================================================== */
+.empathy-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.empathy-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.floating-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: rgba(30, 36, 70, 0.5);
+  border: 1px dashed rgba(187, 134, 252, 0.35);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  animation: gentleFloat 4s ease-in-out infinite alternate;
+}
+
+.pill-2 { animation-delay: 0.7s; }
+.pill-3 { animation-delay: 1.4s; }
+
+.center-empathy-box {
+  padding: 44px 36px;
+  max-width: 680px;
+  position: relative;
+}
+
+.glowing-border {
+  border: 1px solid rgba(255, 117, 151, 0.35);
+  box-shadow: 0 0 35px rgba(255, 117, 151, 0.15), var(--glass-shadow);
+}
+
+.quote-flower {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+.empathy-title {
+  font-family: var(--font-accent);
+  font-size: 2.8rem;
+  margin-bottom: 14px;
+}
+
+.empathy-main-quote {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: #f1f5f9;
+  margin-bottom: 24px;
+}
+
+.empathy-main-quote strong {
+  color: var(--neon-cyan);
+  font-weight: 600;
+}
+
+.empathy-sign {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--pastel-gold);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   PHASE 4: THE INTERACTIVE GIFT
+   ========================================================================== */
+.gift-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crystal-heart-anchor {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  margin-bottom: 24px;
+}
+
+.crystal-heart {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  position: relative;
+  animation: heartFloat 3s infinite ease-in-out;
+}
+
+.heart-pulse-halo {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 117, 151, 0.45) 0%, transparent 70%);
+  animation: pulseHalo 2s infinite ease-out;
+}
+
+.gift-caption {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+}
+
+.interactive-choices {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 580px;
+}
+
+.gift-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: var(--transition-smooth);
+}
+
+.btn-icon {
+  font-size: 2rem;
+}
+
+.btn-info strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.btn-info small {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.btn-wish:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 25px rgba(3, 218, 198, 0.35);
+  transform: translateY(-4px);
+}
+
+.btn-hug:hover {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 25px rgba(255, 117, 151, 0.35);
+  transform: translateY(-4px);
+}
+
+.restart-link {
+  margin-top: 36px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.restart-link:hover {
+  color: var(--neon-purple);
+}
+
+/* ==========================================================================
+   PHASE INDICATOR (BOTTOM DOTS)
+   ========================================================================== */
+.phase-indicator {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px;
+  background: rgba(15, 18, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  z-index: 50;
+}
+
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.indicator-dot.active {
+  width: 28px;
+  border-radius: 999px;
+  background: var(--neon-pink);
+  box-shadow: 0 0 10px var(--neon-pink);
+}
+
+/* ==========================================================================
+   MODAL: WISH (LỜI CHÚC)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 5, 12, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-glass {
+  max-width: 520px;
+  width: 100%;
+  padding: 40px 32px;
+  position: relative;
+  text-align: center;
+  border: 1px solid rgba(255, 117, 151, 0.4);
+  box-shadow: 0 0 45px rgba(255, 117, 151, 0.2);
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.modal-overlay.open .modal-glass {
+  transform: translateY(0) scale(1);
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modal-sparkle {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.modal-title {
+  font-family: var(--font-accent);
+  font-size: 2.2rem;
+  color: var(--pastel-gold);
+  margin-bottom: 16px;
+}
+
+.modal-body {
+  font-size: 1.05rem;
+  color: #e2e8f0;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.modal-accept-btn {
+  background: linear-gradient(135deg, var(--neon-pink), #e040fb);
+  border: none;
+  padding: 12px 32px;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 117, 151, 0.4);
+  transition: var(--transition-smooth);
+}
+
+.modal-accept-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 117, 151, 0.6);
+}
+
+/* ==========================================================================
+   BANNER: VIRTUAL HUG NOTIFICATION
+   ========================================================================== */
+.hug-banner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 150;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hug-banner.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.hug-banner-content {
+  padding: 44px 36px;
+  text-align: center;
+  max-width: 460px;
+  border: 2px solid var(--neon-pink);
+  box-shadow: 0 0 60px rgba(255, 117, 151, 0.5);
+}
+
+.hug-emoji {
+  font-size: 4rem;
+  margin-bottom: 12px;
+  animation: pulseGlow 1.5s infinite;
+}
+
+.hug-banner-content h2 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.hug-banner-content p {
+  color: #fce7f3;
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+}
+
+.close-hug-btn {
+  background: var(--neon-pink);
+  border: none;
+  padding: 12px 28px;
+  color: #fff;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 117, 151, 0.5);
+  transition: var(--transition-smooth);
+}
+
+.close-hug-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+@keyframes floatOrb {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(4deg); }
+}
+
+@keyframes tiltRing {
+  0% { transform: rotate(-28deg) rotateY(0deg); }
+  50% { transform: rotate(-24deg) rotateY(180deg); }
+  100% { transform: rotate(-28deg) rotateY(360deg); }
+}
+
+@keyframes orbitAround {
+  0% { transform: rotate(0deg) translateX(85px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(85px) rotate(-360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+@keyframes wave {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+
+@keyframes gentleFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+@keyframes heartFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.08); }
+}
+
+@keyframes pulseHalo {
+  0% { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (DESKTOP & MOBILE FRIENDLY)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .stars-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 480px;
+  }
+
+  .star-card {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .top-nav {
+    padding: 0 16px;
+    top: 14px;
+  }
+
+  .planet-badge {
+    padding: 6px 12px;
+    font-size: 0.72rem;
+  }
+
+  .music-toggle {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+  }
+
+  .music-label {
+    display: none; /* Keep it clean and minimal on small screens */
+  }
+
+  .stage-container {
+    padding: 70px 16px 80px;
+  }
+
+  .main-title {
+    font-size: 2.6rem;
+  }
+
+  .dialogue-text {
+    font-size: 1.05rem;
+  }
+
+  .healing-quote {
+    padding: 16px 18px;
+    font-size: 0.92rem;
+  }
+
+  .title-medium {
+    font-size: 1.9rem;
+  }
+
+  .interactive-choices {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .gift-btn {
+    width: 100%;
+    padding: 16px 18px;
+  }
+
+  .empathy-title {
+    font-size: 2.3rem;
+  }
+
+  .empathy-main-quote {
+    font-size: 1.08rem;
+  }
+
+  .center-empathy-box {
+    padding: 28px 18px;
+  }
+
+  .floating-pill {
+    font-size: 0.84rem;
+    padding: 8px 16px;
+  }
+}
